@@ -12,7 +12,7 @@ env = VecFrameStack(env, n_stack=4)
 
 model = PPO("CnnPolicy", env, verbose=1, learning_rate=2.5e-4, n_steps=128, batch_size=64, n_epochs=4)
 model.learn(total_timesteps=128)  
-model.save("ppo_breakout")
+model.save("pong")
 
 env.close()
 
