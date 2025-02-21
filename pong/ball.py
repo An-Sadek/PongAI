@@ -4,7 +4,7 @@ import random
 
 
 class Ball:
-    MAX_VEL = 5
+    MAX_VEL = 15
     RADIUS = 7
 
     def __init__(self, x, y):
@@ -14,8 +14,9 @@ class Ball:
         angle = self._get_random_angle(-30, 30, [0])
         pos = 1 if random.random() < 0.5 else -1
 
-        self.x_vel = pos * abs(math.cos(angle) * self.MAX_VEL)
-        self.y_vel = math.sin(angle) * self.MAX_VEL
+        # Chỉnh sửa để giảm tốc độ bóng thêm
+        self.x_vel = pos * abs(math.cos(angle) * self.MAX_VEL) / 2  # Giảm tốc độ theo trục X
+        self.y_vel = math.sin(angle) * self.MAX_VEL / 2  # Giảm tốc độ theo trục Y
 
     def _get_random_angle(self, min_angle, max_angle, excluded):
         angle = 0
@@ -36,8 +37,9 @@ class Ball:
         self.y = self.original_y
 
         angle = self._get_random_angle(-30, 30, [0])
-        x_vel = abs(math.cos(angle) * self.MAX_VEL)
-        y_vel = math.sin(angle) * self.MAX_VEL
+        # Giảm tốc độ sau khi reset bóng
+        x_vel = abs(math.cos(angle) * self.MAX_VEL) / 2  # Giảm tốc độ theo trục X
+        y_vel = math.sin(angle) * self.MAX_VEL / 2  # Giảm tốc độ theo trục Y
 
         self.y_vel = y_vel
         self.x_vel *= -1

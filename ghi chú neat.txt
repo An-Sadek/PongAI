@@ -1,0 +1,79 @@
+[NEAT]
+fitness_criterion     = max  # Tiêu chí đánh giá fitness (max: chọn cá thể có fitness cao nhất)
+fitness_threshold     = 400  # Ngưỡng dừng huấn luyện nếu đạt được giá trị fitness này
+pop_size              = 50   # Số lượng cá thể trong quần thể (quan trọng, tăng có thể giúp khám phá tốt hơn)
+reset_on_extinction   = False  # Nếu True, khi tất cả loài tuyệt chủng, NEAT sẽ reset lại
+
+[DefaultStagnation]
+species_fitness_func = max  # Chọn giá trị fitness cao nhất của mỗi loài làm đại diện
+max_stagnation       = 20   # Số thế hệ tối đa mà loài không tiến bộ trước khi bị loại bỏ
+species_elitism      = 2    # Số lượng loài mạnh nhất được giữ lại khi loài khác bị loại bỏ
+
+[DefaultReproduction]
+elitism            = 2    # Số lượng cá thể có fitness cao nhất được giữ nguyên vào thế hệ sau
+survival_threshold = 0.2  # Tỷ lệ cá thể được giữ lại (20% cao nhất được chọn, 80% bị loại bỏ)
+
+[DefaultGenome]
+# Các lựa chọn hàm kích hoạt cho nơ-ron
+activation_default      = relu  # Mặc định là ReLU (nếu muốn thử nghiệm, có thể thay bằng tanh, sigmoid,...)
+activation_mutate_rate  = 1.0   # Xác suất thay đổi hàm kích hoạt của nơ-ron
+activation_options      = relu  # Các hàm kích hoạt được phép chọn (chỉ có relu ở đây)
+
+# Các lựa chọn tổng hợp giá trị trong nơ-ron
+aggregation_default     = sum  # Cách tổng hợp đầu vào của nơ-ron (sum: tổng các trọng số)
+aggregation_mutate_rate = 0.0  # Xác suất thay đổi phương pháp tổng hợp
+aggregation_options     = sum  # Chỉ sử dụng sum
+
+# Bias của nơ-ron (ảnh hưởng đến đầu ra của mạng)
+bias_init_mean          = 3.0   # Giá trị trung bình của bias ban đầu
+bias_init_stdev         = 1.0   # Độ lệch chuẩn của bias ban đầu
+bias_max_value          = 30.0  # Bias tối đa
+bias_min_value          = -30.0 # Bias tối thiểu
+bias_mutate_power       = 0.5   # Độ lớn của sự thay đổi bias khi đột biến
+bias_mutate_rate        = 0.7   # Xác suất bias bị thay đổi khi đột biến
+bias_replace_rate       = 0.1   # Xác suất bias bị thay thế hoàn toàn khi đột biến
+
+# Độ tương đồng giữa các genome (dùng để phân chia loài)
+compatibility_disjoint_coefficient = 1.0  # Ảnh hưởng của các kết nối không khớp (disjoint)
+compatibility_weight_coefficient   = 0.5  # Ảnh hưởng của sự khác biệt trọng số kết nối
+
+# Xác suất thêm hoặc xóa kết nối
+conn_add_prob           = 0.5  # Xác suất thêm một kết nối mới vào mạng
+conn_delete_prob        = 0.5  # Xác suất xóa một kết nối hiện có
+
+# Xác suất bật/tắt một kết nối
+enabled_default         = True  # Mặc định, kết nối giữa các nơ-ron được bật
+enabled_mutate_rate     = 0.01  # Xác suất bật/tắt kết nối khi đột biến
+
+feed_forward            = True  # Dùng mô hình feed-forward (không có vòng lặp)
+initial_connection      = full_direct  # Mạng bắt đầu với các kết nối đầy đủ giữa input và output
+
+# Xác suất thêm hoặc xóa nơ-ron
+node_add_prob           = 0.2  # Xác suất thêm một nơ-ron mới vào mạng
+node_delete_prob        = 0.2  # Xác suất xóa một nơ-ron hiện có
+
+# Cấu trúc mạng
+num_hidden              = 2  # Số lớp ẩn ban đầu (NEAT sẽ tự tiến hóa số lượng này)
+num_inputs              = 3  # Số đầu vào của mạng
+num_outputs             = 3  # Số đầu ra của mạng
+
+# Tham số liên quan đến phản ứng (ít quan trọng)
+response_init_mean      = 1.0
+response_init_stdev     = 0.0
+response_max_value      = 30.0
+response_min_value      = -30.0
+response_mutate_power   = 0.0
+response_mutate_rate    = 0.0
+response_replace_rate   = 0.0
+
+# Các tham số liên quan đến trọng số của kết nối
+weight_init_mean        = 0.0   # Trọng số ban đầu có trung bình = 0
+weight_init_stdev       = 1.0   # Độ lệch chuẩn của trọng số ban đầu
+weight_max_value        = 30    # Trọng số tối đa
+weight_min_value        = -30   # Trọng số tối thiểu
+weight_mutate_power     = 0.5   # Độ lớn của sự thay đổi trọng số khi đột biến
+weight_mutate_rate      = 0.8   # Xác suất trọng số bị thay đổi khi đột biến
+weight_replace_rate     = 0.1   # Xác suất trọng số bị thay thế hoàn toàn khi đột biến
+
+[DefaultSpeciesSet]
+compatibility_threshold = 3.0  # Ngưỡng để xác định hai genome có thuộc cùng một loài hay không

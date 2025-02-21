@@ -2,7 +2,7 @@ import pygame
 
 
 class Paddle:
-    VEL = 4
+    VEL = 6  # Giảm tốc độ thanh di chuyển
     WIDTH = 20
     HEIGHT = 100
 
@@ -16,9 +16,9 @@ class Paddle:
 
     def move(self, up=True):
         if up:
-            self.y -= self.VEL
+            self.y -= self.VEL  
         else:
-            self.y += self.VEL
+            self.y += self.VEL  
 
     def reset(self):
         self.x = self.original_x

@@ -49,8 +49,8 @@ class PongGame:
 
     def train_ai(self, genome1, genome2, config, draw=False):
         """
-        Train the AI by passing two NEAT neural networks and the NEAt config object.
-        These AI's will play against eachother to determine their fitness.
+        Train the AI by passing two NEAT neural networks and the NEAT config object.
+        These AI's will play against each other to determine their fitness.
         """
         run = True
         start_time = time.time()
@@ -68,7 +68,6 @@ class PongGame:
                     return True
 
             game_info = self.game.loop()
-
             self.move_ai_paddles(net1, net2)
 
             if draw:
@@ -96,13 +95,13 @@ class PongGame:
 
             valid = True
             if decision == 0:  # Don't move
-                genome.fitness -= 0.01  # we want to discourage this
+                genome.fitness -= 0.01  # We want to discourage this
             elif decision == 1:  # Move up
                 valid = self.game.move_paddle(left=left, up=True)
             else:  # Move down
                 valid = self.game.move_paddle(left=left, up=False)
 
-            if not valid:  # If the movement makes the paddle go off the screen punish the AI
+            if not valid:  # If the movement makes the paddle go off the screen, punish the AI
                 genome.fitness -= 1
 
     def calculate_fitness(self, game_info, duration):
@@ -112,17 +111,17 @@ class PongGame:
 
 def eval_genomes(genomes, config):
     """
-    Run each genome against eachother one time to determine the fitness.
+    Run each genome against each other one time to determine the fitness.
     """
     width, height = 700, 500
     win = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pong")
 
     for i, (genome_id1, genome1) in enumerate(genomes):
-        print(round(i/len(genomes) * 100), end=" ")
+        print(round(i / len(genomes) * 100), end=" ")
         genome1.fitness = 0
-        for genome_id2, genome2 in genomes[min(i+1, len(genomes) - 1):]:
-            genome2.fitness = 0 if genome2.fitness == None else genome2.fitness
+        for genome_id2, genome2 in genomes[min(i + 1, len(genomes) - 1):]:
+            genome2.fitness = 0 if genome2.fitness is None else genome2.fitness
             pong = PongGame(win, width, height)
 
             force_quit = pong.train_ai(genome1, genome2, config, draw=True)
@@ -131,16 +130,32 @@ def eval_genomes(genomes, config):
 
 
 def run_neat(config):
-    #p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-85')
-    p = neat.Population(config)
+    checkpoint_dir = "neat-checkpoint"  # Thư mục chứa các file checkpoint
+    checkpoint_prefix = "neat-checkpoint-"  # Tiền tố của file checkpoint
+    
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)  # Tạo thư mục nếu chưa tồn tại
+    
+    checkpoints = [f for f in os.listdir(checkpoint_dir) if f.startswith(checkpoint_prefix)]
+    
+    if checkpoints:
+        latest_checkpoint = max(checkpoints, key=lambda f: int(f.split('-')[-1]))  # Chọn checkpoint có số lớn nhất
+        checkpoint_path = os.path.join(checkpoint_dir, latest_checkpoint)
+        print(f"Khôi phục từ checkpoint: {checkpoint_path}")
+        p = neat.Checkpointer.restore_checkpoint(checkpoint_path)
+    else:
+        print("Không tìm thấy checkpoint, bắt đầu huấn luyện mới")
+        p = neat.Population(config)
+
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(1))
+    p.add_reporter(neat.Checkpointer(1, filename_prefix=os.path.join(checkpoint_dir, checkpoint_prefix)))  # Lưu mỗi 1 thế hệ
 
     winner = p.run(eval_genomes, 50)
     with open("best.pickle", "wb") as f:
         pickle.dump(winner, f)
+
 
 
 def test_best_network(config):
