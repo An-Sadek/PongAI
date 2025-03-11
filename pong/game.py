@@ -21,7 +21,9 @@ class Game:
     Use the information returned from .loop() to determine when to end the game by calling
     .reset().
     """
-    SCORE_FONT = pygame.font.SysFont("comicsans", 50)
+    SCORE_FONT = pygame.font.SysFont("comicsans", 50) # Tuỳ chỉnh font
+
+    # Màu RGB
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
@@ -47,8 +49,12 @@ class Game:
             f"{self.left_score}", 1, self.WHITE)
         right_score_text = self.SCORE_FONT.render(
             f"{self.right_score}", 1, self.WHITE)
+        
+        # Vẽ điểm của player 1
         self.window.blit(left_score_text, (self.window_width //
                                            4 - left_score_text.get_width()//2, 20))
+        
+        # Vẽ điểm của player 2
         self.window.blit(right_score_text, (self.window_width * (3/4) -
                                             right_score_text.get_width()//2, 20))
 
@@ -58,6 +64,7 @@ class Game:
         self.window.blit(hits_text, (self.window_width //
                                      2 - hits_text.get_width()//2, 10))
 
+    # Vẽ đường chia giữa
     def _draw_divider(self):
         for i in range(10, self.window_height, self.window_height//20):
             if i % 2 == 1:
@@ -65,28 +72,37 @@ class Game:
             pygame.draw.rect(
                 self.window, self.WHITE, (self.window_width//2 - 5, i, 10, self.window_height//20))
 
+    # Thanh chắn chạm với bóng
     def _handle_collision(self):
         ball = self.ball
         left_paddle = self.left_paddle
         right_paddle = self.right_paddle
 
+        # Nếu chạm vào 2 rìa trên dưới thì đổi hướng y
         if ball.y + ball.RADIUS >= self.window_height:
-            ball.y_vel *= -1
+            ball.y_vel *= -1 
         elif ball.y - ball.RADIUS <= 0:
-            ball.y_vel *= -1
+            ball.y_vel *= -1 
 
+        # Bóng di chuyển sang trái
         if ball.x_vel < 0:
+
+            # Kiểm tra vị trí y của bóng so với paddle trái
             if ball.y >= left_paddle.y and ball.y <= left_paddle.y + Paddle.HEIGHT:
+
+                # Kiểm tra paddle có chạm vào bóng chưa
                 if ball.x - ball.RADIUS <= left_paddle.x + Paddle.WIDTH:
-                    ball.x_vel *= -1
+                    ball.x_vel *= -1 # Đổi hướng x
 
-                    middle_y = left_paddle.y + Paddle.HEIGHT / 2
-                    difference_in_y = middle_y - ball.y
-                    reduction_factor = (Paddle.HEIGHT / 2) / ball.MAX_VEL
-                    y_vel = difference_in_y / reduction_factor
-                    ball.y_vel = -1 * y_vel
-                    self.left_hits += 1
+                    # Đánh trúng ở giữa tốc độ chậm
+                    middle_y = left_paddle.y + Paddle.HEIGHT / 2 # Tính vị trí chính giữa
+                    difference_in_y = middle_y - ball.y # Tính khoảng cách từ điểm chính giữa đến tâm của trái bóng
+                    reduction_factor = (Paddle.HEIGHT / 2) / ball.MAX_VEL # Tính hệ số giảm tốc
+                    y_vel = difference_in_y / reduction_factor # Tốc độ mới, càng gần giữa tốc độ càng chậm
+                    ball.y_vel = -1 * y_vel # Đổi hướng y
+                    self.left_hits += 1 # Tính điểm bến trái
 
+        # Bóng di chuyển sang phải, còn lại tương tự
         else:
             if ball.y >= right_paddle.y and ball.y <= right_paddle.y + Paddle.HEIGHT:
                 if ball.x + ball.RADIUS >= right_paddle.x:
@@ -117,18 +133,24 @@ class Game:
 
     def move_paddle(self, left=True, up=True):
         """
-        Move the left or right paddle.
+        Kiểm tra xem paddle có di chuyển được hay không
 
-        :returns: boolean indicating if paddle movement is valid. 
-                  Movement is invalid if it causes paddle to go 
-                  off the screen
+        Giá trị trả về là boolean
+            Nếu paddle di chuyển ra ngoài màn hình thì trả về False
         """
+        # Paddle trái
         if left:
+
+            # Paddle vượt quá màn hình phía trên
             if up and self.left_paddle.y - Paddle.VEL < 0:
                 return False
+            
+            # Paddle vượt quá màn hình phía dưới
             if not up and self.left_paddle.y + Paddle.HEIGHT > self.window_height:
                 return False
             self.left_paddle.move(up)
+
+        # Paddle phải, cũng tương tự
         else:
             if up and self.right_paddle.y - Paddle.VEL < 0:
                 return False
@@ -140,10 +162,7 @@ class Game:
 
     def loop(self):
         """
-        Executes a single game loop.
-
-        :returns: GameInformation instance stating score 
-                  and hits of each paddle.
+        Chạy vòng lặp chạy game
         """
         self.ball.move()
         self._handle_collision()
@@ -155,13 +174,14 @@ class Game:
             self.ball.reset()
             self.left_score += 1
 
+        # Trả về thông tin game
         game_info = GameInformation(
             self.left_hits, self.right_hits, self.left_score, self.right_score)
 
         return game_info
 
     def reset(self):
-        """Resets the entire game."""
+        """Reset lại game"""
         self.ball.reset()
         self.left_paddle.reset()
         self.right_paddle.reset()

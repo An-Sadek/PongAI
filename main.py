@@ -9,6 +9,9 @@ import pickle
 
 class PongGame:
     def __init__(self, window, width, height):
+        """
+        Khởi tạo window, paddle và bóng
+        """
         self.game = Game(window, width, height)
         self.ball = self.game.ball
         self.left_paddle = self.game.left_paddle
@@ -16,14 +19,15 @@ class PongGame:
 
     def test_ai(self, net):
         """
-        Test the AI against a human player by passing a NEAT neural network
+        Dùng AI để đấu với người
         """
         clock = pygame.time.Clock()
         run = True
         while run:
-            clock.tick(60)
+            clock.tick(60) # FPS
             game_info = self.game.loop()
 
+            # Thoát trò chơi
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -33,36 +37,42 @@ class PongGame:
                 self.right_paddle.x - self.ball.x), self.ball.y))
             decision = output.index(max(output))
 
-            if decision == 1:  # AI moves up
+            # Hành động của Agent, Agent chỉ có 2 hành động
+            if decision == 1:  # Đi lên
                 self.game.move_paddle(left=False, up=True)
-            elif decision == 2:  # AI moves down
+            elif decision == 2:  # Đi xuống
                 self.game.move_paddle(left=False, up=False)
 
-            keys = pygame.key.get_pressed()
+            # Hành động của người, người có 3 hành động
+            keys = pygame.key.get_pressed() # Lấy các phím được nhấn
             if keys[pygame.K_w]:
                 self.game.move_paddle(left=True, up=True)
             elif keys[pygame.K_s]:
                 self.game.move_paddle(left=True, up=False)
+            # Nếu không ấn phím thì paddle đứng yên
 
+            # Hiện điểm số
             self.game.draw(draw_score=True)
+
+            # Cập nhật lại hiển thị
             pygame.display.update()
 
     def train_ai(self, genome1, genome2, config, draw=False):
         """
-        Train the AI by passing two NEAT neural networks and the NEAT config object.
-        These AI's will play against each other to determine their fitness.
+        Cho 2 Agent tự huấn luyện
         """
         run = True
         start_time = time.time()
 
-        net1 = neat.nn.FeedForwardNetwork.create(genome1, config)
-        net2 = neat.nn.FeedForwardNetwork.create(genome2, config)
+        net1 = neat.nn.FeedForwardNetwork.create(genome1, config) # Tạo mạng NEAT cho Agent 1
+        net2 = neat.nn.FeedForwardNetwork.create(genome2, config) # Tạo mạng NEAT cho Agent 2
         self.genome1 = genome1
         self.genome2 = genome2
 
-        max_hits = 50
+        max_hits = 50 # Số lần đạt điểm
 
         while run:
+            # Thoát trò chơi
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return True
@@ -152,7 +162,7 @@ def run_neat(config):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(1, filename_prefix=os.path.join(checkpoint_dir, checkpoint_prefix)))  # Lưu mỗi 1 thế hệ
 
-    winner = p.run(eval_genomes, 50)
+    winner = p.run(eval_genomes, 51)
     with open("best.pickle", "wb") as f:
         pickle.dump(winner, f)
 
